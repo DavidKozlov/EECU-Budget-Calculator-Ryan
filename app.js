@@ -62,3 +62,60 @@ backButton.addEventListener("click", () => {
 })
 
 // Chart
+/**
+ * @param {NodeListOf<HTMLInputElement>} inputs 
+ */
+
+function sum(inputs) {
+    const arr = Array.from(inputs);
+    if (arr.length === 0) return 0;
+
+    //const section = arr[0].closest("section");
+    // if (section && section.classList.contains("placeholder")) {
+    //return 0;
+    //}
+    // Only use the above code if you need to filter out an input
+
+    return arr.reduce((total, input) => {
+        const n = Number(input.value)
+        return total + (Number.isFinite(n) ? n : 0);
+    }, 0)
+}
+const [...sections] = document.querySelectorAll("section");
+const filteredSections = Array.from(sections).filter(element => {
+    // Return for elements that have the specific class 'inputs'
+    return element.classList.contains('inputs');
+});
+const inputs = filteredSections.map(section => 
+    section.querySelector("input")
+)
+// const sectionInputMap = filteredSections.map(section => {
+//     return {
+//         section: section,
+//         input: section.querySelector("input")
+//     };
+// });
+const canvas = document.querySelector("canvas");
+let current_chart = null;
+
+function update() {
+    current_chart?.destroy();
+    current_chart = new Chart(canvas, {
+        type: "doughnut",
+        data: {
+            labels: ["Monthly Income", "Student Loans", "Housing", "Essentials","Lifestyle","Future-Proofing"],
+            datasets: [
+                {
+                    label: "Total Expenses",
+                    data: inputs.map(inputs => sum(inputs))
+                }
+            ]
+        }
+    });
+}
+
+document.body.addEventListener("input", () => {
+    update();
+});
+
+update();
